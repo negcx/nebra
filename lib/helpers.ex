@@ -3,7 +3,7 @@ defmodule Lexer.Helpers do
     case String.length(input) do
       1 ->
         quote do
-          def lexer([{unquote(input), metadata} | rest], token, tokens) do
+          defp lexer([{unquote(input), metadata} | rest], token, tokens) do
             lexer(rest, nil, tokens ++ finalize_token(token) ++ [{unquote(output), metadata}])
           end
         end
@@ -12,11 +12,11 @@ defmodule Lexer.Helpers do
         [char1, char2] = String.graphemes(input)
 
         quote do
-          def lexer(
-                [{unquote(char1), metadata}, {unquote(char2), _metadata} | rest],
-                token,
-                tokens
-              ) do
+          defp lexer(
+                 [{unquote(char1), metadata}, {unquote(char2), _metadata} | rest],
+                 token,
+                 tokens
+               ) do
             lexer(rest, nil, tokens ++ finalize_token(token) ++ [{unquote(output), metadata}])
           end
         end
@@ -27,7 +27,7 @@ defmodule Lexer.Helpers do
     case String.length(input) do
       1 ->
         quote do
-          def string_lexer([{unquote(input), metadata} | rest], string) do
+          defp string_lexer([{unquote(input), metadata} | rest], string) do
             string_lexer(rest, string <> unquote(output))
           end
         end
@@ -36,10 +36,10 @@ defmodule Lexer.Helpers do
         [char1, char2] = String.graphemes(input)
 
         quote do
-          def string_lexer(
-                [{unquote(char1), metadata}, {unquote(char2), _metadata} | rest],
-                string
-              ) do
+          defp string_lexer(
+                 [{unquote(char1), metadata}, {unquote(char2), _metadata} | rest],
+                 string
+               ) do
             string_lexer(rest, string <> unquote(output))
           end
         end

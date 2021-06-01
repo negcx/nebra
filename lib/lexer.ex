@@ -14,7 +14,7 @@ defmodule Lexer do
     "not" => :not
   }
 
-  def code_with_metadata(code, metadata \\ []),
+  defp code_with_metadata(code, metadata),
     do:
       code_with_metadata(
         String.graphemes(code),
@@ -22,9 +22,9 @@ defmodule Lexer do
         []
       )
 
-  def code_with_metadata([], _, stack), do: stack
+  defp code_with_metadata([], _, stack), do: stack
 
-  def code_with_metadata(["\n" | rest], metadata, stack) do
+  defp code_with_metadata(["\n" | rest], metadata, stack) do
     code_with_metadata(
       rest,
       Keyword.update!(metadata, :column, fn _ -> 1 end) |> Keyword.update!(:line, &(&1 + 1)),
@@ -32,7 +32,7 @@ defmodule Lexer do
     )
   end
 
-  def code_with_metadata([head | rest], metadata, stack) do
+  defp code_with_metadata([head | rest], metadata, stack) do
     code_with_metadata(
       rest,
       Keyword.update!(metadata, :column, &(&1 + 1)),
@@ -40,7 +40,7 @@ defmodule Lexer do
     )
   end
 
-  def finalize_token({:number, value, metadata}) do
+  defp finalize_token({:number, value, metadata}) do
     if String.contains?(value, ".") do
       [{String.to_float(value), metadata}]
     else
@@ -48,24 +48,24 @@ defmodule Lexer do
     end
   end
 
-  def finalize_token(nil), do: []
+  defp finalize_token(nil), do: []
 
-  def finalize_token({:id, value, metadata}) do
+  defp finalize_token({:id, value, metadata}) do
     case Map.get(@reserved, value) do
       nil -> [{{:id, value}, metadata}]
       reserved -> [{reserved, metadata}]
     end
   end
 
-  def finalize_token(t), do: [t]
+  defp finalize_token(t), do: [t]
 
   # Comments
-  def lexer([{"/", metadata}, {"/", _} | rest], token, tokens) do
+  defp lexer([{"/", metadata}, {"/", _} | rest], token, tokens) do
     {rest, comment} = comment_lexer(rest, "")
     lexer(rest, nil, tokens ++ finalize_token(token) ++ [{{:comment, comment}, metadata}])
   end
 
-  def lexer([{"/", metadata}, {"*", _} | rest], token, tokens) do
+  defp lexer([{"/", metadata}, {"*", _} | rest], token, tokens) do
     {rest, comment} = block_comment_lexer(rest, "")
     lexer(rest, nil, tokens ++ finalize_token(token) ++ [{{:block_comment, comment}, metadata}])
   end
@@ -99,14 +99,14 @@ defmodule Lexer do
   lex("\n", :newline)
 
   # Strings
-  def lexer([{"\"", metadata} | rest], token, tokens) do
+  defp lexer([{"\"", metadata} | rest], token, tokens) do
     {rest, string} = string_lexer(rest, "")
     tokens = tokens ++ finalize_token(token) ++ [{string, metadata}]
     lexer(rest, nil, tokens)
   end
 
   # Numbers and Identifiers
-  def lexer([{char, metadata} | rest], nil, tokens) do
+  defp lexer([{char, metadata} | rest], nil, tokens) do
     if Enum.member?(String.graphemes("0123456789"), char) do
       lexer(rest, {:number, char, metadata}, tokens)
     else
@@ -114,7 +114,7 @@ defmodule Lexer do
     end
   end
 
-  def lexer([{char, cmetadata} | rest], {:number, number, metadata}, tokens) do
+  defp lexer([{char, cmetadata} | rest], {:number, number, metadata}, tokens) do
     if Enum.member?(String.graphemes("0123456789."), char) do
       lexer(rest, {:number, number <> char, metadata}, tokens)
     else
@@ -122,11 +122,11 @@ defmodule Lexer do
     end
   end
 
-  def lexer([{char, _meta} | rest], {:id, id, metadata}, tokens),
+  defp lexer([{char, _meta} | rest], {:id, id, metadata}, tokens),
     do: lexer(rest, {:id, id <> char, metadata}, tokens)
 
   # EOF
-  def lexer([], token, tokens),
+  defp lexer([], token, tokens),
     do: tokens ++ finalize_token(token)
 
   def lexer(code, metadata \\ []) do
@@ -140,20 +140,20 @@ defmodule Lexer do
   string_lex("\\\\", "\\")
   string_lex("\\t", "\t")
   string_lex("\\r", "\r")
-  def string_lexer([{"\"", _meta} | rest], string), do: {rest, string}
-  def string_lexer([], string), do: raise("Expected end quote \", string: #{string}")
-  def string_lexer([{char, _meta} | rest], string), do: string_lexer(rest, string <> char)
+  defp string_lexer([{"\"", _meta} | rest], string), do: {rest, string}
+  defp string_lexer([], string), do: raise("Expected end quote \", string: #{string}")
+  defp string_lexer([{char, _meta} | rest], string), do: string_lexer(rest, string <> char)
 
-  def comment_lexer([], comment), do: {[], comment}
-  def comment_lexer([{"\n", _} | _] = rest, comment), do: {rest, comment}
-  def comment_lexer([{c, _} | rest], comment), do: comment_lexer(rest, comment <> c)
+  defp comment_lexer([], comment), do: {[], comment}
+  defp comment_lexer([{"\n", _} | _] = rest, comment), do: {rest, comment}
+  defp comment_lexer([{c, _} | rest], comment), do: comment_lexer(rest, comment <> c)
 
-  def block_comment_lexer([], _comment), do: raise("Expected end of block comment")
-  def block_comment_lexer([{"*", _}, {"/", _} | rest], comment), do: {rest, comment}
-  def block_comment_lexer([{c, _} | rest], comment), do: block_comment_lexer(rest, comment <> c)
+  defp block_comment_lexer([], _comment), do: raise("Expected end of block comment")
+  defp block_comment_lexer([{"*", _}, {"/", _} | rest], comment), do: {rest, comment}
+  defp block_comment_lexer([{c, _} | rest], comment), do: block_comment_lexer(rest, comment <> c)
 
-  def strip_token({{token, _}, _}, type), do: token != type
-  def strip_token({token, _}, type), do: token != type
+  defp strip_token({{token, _}, _}, type), do: token != type
+  defp strip_token({token, _}, type), do: token != type
 
   def strip(tokens, type) do
     tokens
