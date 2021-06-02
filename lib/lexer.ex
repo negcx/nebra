@@ -84,6 +84,7 @@ defmodule Lexer do
   lex("(", :"(")
   lex(")", :")")
   lex(".", :.)
+  lex("++", :++)
   lex("+", :+)
   lex("-", :-)
   lex("/", :/)
@@ -158,5 +159,37 @@ defmodule Lexer do
   def strip(tokens, type) do
     tokens
     |> Enum.filter(&strip_token(&1, type))
+  end
+
+  defp convert_to_yecc([{{token, value}, metadata} | tokens]),
+    do: [{token, metadata, value}] ++ convert_to_yecc(tokens)
+
+  defp convert_to_yecc([{token, metadata} | tokens]) when is_integer(token),
+    do: [{:int, metadata, token}] ++ convert_to_yecc(tokens)
+
+  defp convert_to_yecc([{token, metadata} | tokens]) when is_float(token),
+    do: [{:number, metadata, token}] ++ convert_to_yecc(tokens)
+
+  defp convert_to_yecc([{token, metadata} | tokens]) when is_binary(token),
+    do: [{:string, metadata, token}] ++ convert_to_yecc(tokens)
+
+  defp convert_to_yecc([{token, metadata} | tokens]) when is_atom(token),
+    do: [{token, metadata}] ++ convert_to_yecc(tokens)
+
+  defp convert_to_yecc([]), do: []
+
+  def to_yecc(tokens) do
+    last_line =
+      tokens
+      |> Enum.reverse()
+      |> hd()
+      |> elem(1)
+
+    tokens
+    |> strip(:whitespace)
+    |> strip(:comment)
+    |> strip(:block_comment)
+    |> convert_to_yecc()
+    |> Kernel.++([{:"$end", last_line}])
   end
 end

@@ -18,6 +18,11 @@ defmodule AmuletTest do
 
     s = "A string here!"
 
+    map_literal = {
+      [s]: "A value",
+      another_key: 3, // Trailing commas are ok.
+    }
+
     unwrap = (i, f) => {
         if(i != null and i != undefined) f()
         else undefined
