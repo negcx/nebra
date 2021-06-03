@@ -34,7 +34,5 @@ defmodule AmuletTest do
       |> Lexer.strip(:whitespace)
       |> Lexer.strip(:comment)
       |> Lexer.strip(:block_comment)
-
-    IO.inspect(tokens, limit: :infinity)
   end
 end

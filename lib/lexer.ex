@@ -94,6 +94,7 @@ defmodule Lexer do
   lex("}", :"}")
   lex("[", :"[")
   lex("]", :"]")
+  lex(";", :";")
   lex(" ", :whitespace)
   lex("\t", :whitespace)
   lex("\r\n", :newline)
@@ -189,7 +190,12 @@ defmodule Lexer do
     |> strip(:whitespace)
     |> strip(:comment)
     |> strip(:block_comment)
+    |> strip(:newline)
     |> convert_to_yecc()
     |> Kernel.++([{:"$end", last_line}])
+  end
+
+  def lex_and_parse(code) do
+    Lexer.lexer(code) |> Lexer.to_yecc() |> :parser.parse()
   end
 end

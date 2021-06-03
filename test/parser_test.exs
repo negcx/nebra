@@ -1,14 +1,15 @@
 defmodule ParserTest do
   use ExUnit.Case
 
-  defp lex(code) do
-    Lexer.lexer(code)
-    |> Lexer.strip(:whitespace)
-    |> Lexer.strip(:comment)
-    |> Lexer.strip(:block_comment)
-  end
+  test "Yecc a few statements and a function call" do
+    code = """
+    x = a, b => {
+      (a + b) * (a * b)
+    };
 
-  test "Simple calculation" do
-    assert = {:*, _, [{:+, _, [3, 4]}, {:+, _, [5, 9]}]} = Parser.parse(lex("(3 + 4) * (5 + 9)"))
+    x (3,4)
+    """
+
+    IO.inspect(Lexer.lex_and_parse(code))
   end
 end
