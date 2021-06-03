@@ -26,3 +26,4 @@ amulet-*.tar
 /tmp/
 .elixir_ls
 .env
+src/parser.erl

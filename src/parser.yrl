@@ -1,53 +1,85 @@
-Nonterminals E P_list F S S_list B E_list Call List Element Elements.
-Terminals '+' '*' '-' '/' '(' ')' '{' '}' ',' '=>' '=' ';' int number id '[' ']'.
-Rootsymbol S_list.
+Nonterminals Statement Statements Expression Block Function FunctionCall List Literal Elements Parameters MapElement MapElements Map Dispatch Access Uminus.
+Terminals '+' '*' '-' '/' '(' ')' '{' '}' ':' ',' '=>' '=' ';' int number string id '[' ']' '->' '.' 'if' else 'or' 'and' 'not' '==' '!=' '>=' '>' '<=' '<' true false null.
+Rootsymbol Statements.
 Endsymbol '$end'.
 
-Left 100 '+'.
-Left 100 '-'.
-Left 200 '/'.
-Left 200 '*'.
 Right 100 '='.
+Left 120 'and'.
+Left 140 'or'.
+Left 200 '==' '!='.
+Left 250 '>' '>=' '<' '<='.
+Left 300 '+'.
+Left 300 '-'.
+Left 400 '*'.
+Left 400 '/'.
+Unary 500 Uminus.
+Unary 500 'not'.
 
-B -> '{' S_list '}' : {block, metadata_of('$1'), '$2'}.
+Block -> '{' Statements '}' : {block, metadata_of('$1'), '$2'}.
+Statement -> Statement ';' : '$1'.
+Statement -> Expression : '$1'.
+Statements -> Statement : ['$1'].
+Statements -> Statement ';' Statements : ['$1' | '$3'].
 
-S -> id '=' E : {'=', ['$1', '$3']}.
-S -> E : '$1'.
-S -> S ';' : '$1'.
-S_list -> S : ['$1'].
-S_list -> S ';' S_list : ['$1' | '$3'].
+Expression -> Expression '=' Expression : {'$2', ['$1', '$3']}.
+Expression -> Expression '+' Expression : {'$2', ['$1', '$3']}.
+Expression -> Expression '-' Expression : {'$2', ['$1', '$3']}.
+Expression -> Expression '*' Expression : {'$2', ['$1', '$3']}.
+Expression -> Expression '/' Expression : {'$2', ['$1', '$3']}.
+Expression -> Expression '==' Expression : {'$2', ['$1', '$3']}.
+Expression -> Expression '!=' Expression : {'$2', ['$1', '$3']}.
+Expression -> Expression '>' Expression : {'$2', ['$1', '$3']}.
+Expression -> Expression '<' Expression : {'$2', ['$1', '$3']}.
+Expression -> Expression '>=' Expression : {'$2', ['$1', '$3']}.
+Expression -> Expression '<=' Expression : {'$2', ['$1', '$3']}.
+Expression -> Expression 'and' Expression : {'$2', ['$1', '$3']}.
+Expression -> Expression 'or' Expression : {'$2', ['$1', '$3']}.
+Expression -> '(' Expression ')' : '$2'.
+Expression -> Literal : '$1'.
+Expression -> id : '$1'.
+Expression -> Function : '$1'.
+Expression -> FunctionCall : '$1'.
+Expression -> Dispatch : '$1'.
+Expression -> Access : '$1'.
+Expression -> 'not' Expression : {'not', metadata_of('$1'), ['$2']}.
+Expression -> Uminus : '$1'.
 
-E -> E '+' E : {'$2', ['$1', '$3']}.
-E -> E '-' E : {'$2', ['$1', '$3']}.
-E -> E '*' E : {'$2', ['$1', '$3']}.
-E -> E '/' E : {'$2', ['$1', '$3']}.
-E -> '(' E ')' : '$2'.
-E -> int : value_of('$1').
-E -> number : value_of('$1').
-E -> id : '$1'.
-% E -> F : '$1'.
-E -> Call : '$1'.
-E -> List : '$1'.
-E_list -> E : ['$1'].
-E_list -> E ',' E_list : ['$1' | '$3'].
+Uminus -> '-' Expression : {uminus, metadata_of('$1'), ['$2']}.
 
-% P_list -> id : ['$1'].
-% P_list -> id ',' P_list : ['$1' | '$3'].
-
-% F -> id '=>' B : {'=>', metadata_of('$1'), ['$1', '$3']}.
-% F -> id '=>' E : {'=>', metadata_of('$1'), ['$1', '$3']}.
-
-% F -> P_list '=>' B : {'=>', metadata_of('$2'), ['$1', '$3']}.
-% F -> P_list '=>' E : {'=>', metadata_of('$2'), ['$1', '$3']}.
-
-Call -> id '(' E_list ')' : {'()', metadata_of('$1'), ['$1', '$3']}.
-
+Literal -> int : value_of('$1').
+Literal -> number : value_of('$1').
+Literal -> string : value_of('$1').
+Literal -> List : '$1'.
+Literal -> Map : '$1'.
+Literal -> true : '$1'.
+Literal -> false : '$1'.
+Literal -> null : '$1'.
 
 List -> '[' ']' : [].
-List -> '[' E_list ']' : '$2'.
-% Elements -> Element : '$1'.
-% Elements -> Element ',' Elements : ['$1' | '$3'].
-% Element -> E : '$1'.
+List -> '[' Elements ']' : '$2'.
+Elements -> Expression : ['$1'].
+Elements -> Expression ',' Elements : ['$1' | '$3'].
+
+Parameters -> id : ['$1'].
+Parameters -> id ',' Parameters : ['$1' | '$3'].
+
+Function -> id '=>' Block : {'=>', metadata_of('$2'), ['$1', '$3']}.
+Function -> id '=>' Expression : {'=>', metadata_of('$2'), ['$1', '$3']}.
+Function -> Parameters '=>' Expression : {'=>', metadata_of('$2'), ['$1', '$3']}.
+Function -> Parameters '=>' Block : {'=>', metadata_of('$2'), ['$1', '$3']}.
+
+FunctionCall -> id '(' ')' : {'()', metadata_of('$1'), ['$1', []]}.
+FunctionCall -> id '(' Elements ')' : {'()', metadata_of('$1'), ['$1', '$3']}.
+
+MapElement -> Expression ':' Expression : {'$1', '$3'}.
+MapElements -> MapElement : ['$1'].
+MapElements -> MapElement ',' MapElements : ['$1' | '$3'].
+Map -> '{' MapElements '}' : {'{}', metadata_of('$1'), '$2'}.
+
+Dispatch -> Expression '->' FunctionCall : {'->', metadata_of('$2'), ['$1', '$3']}.
+
+Access -> Expression '.' id : {'.', metadata_of('$2'), ['$1', '$3']}.
+Access -> Expression '[' Expression ']' : {'.', metadata_of('$2'), ['$1', '$3']}.
 
 Erlang code.
 value_of({_Token, _Metadata, Value}) -> Value.
