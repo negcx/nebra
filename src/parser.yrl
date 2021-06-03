@@ -65,8 +65,10 @@ Elements -> Expression ',' Elements : ['$1' | '$3'].
 Parameters -> id : ['$1'].
 Parameters -> id ',' Parameters : ['$1' | '$3'].
 
-Function -> id '=>' Block : {'=>', metadata_of('$2'), ['$1', '$3']}.
-Function -> id '=>' Expression : {'=>', metadata_of('$2'), ['$1', '$3']}.
+Function -> '(' ')' '=>' Block : {'=>', metadata_of('$1'), [[], '$4']}.
+Function -> '(' ')' '=>' Expression : {'=>', metadata_of('$1'), [[], '$4']}.
+Function -> id '=>' Block : {'=>', metadata_of('$2'), [['$1'], '$3']}.
+Function -> id '=>' Expression : {'=>', metadata_of('$2'), [['$1'], '$3']}.
 Function -> Parameters '=>' Expression : {'=>', metadata_of('$2'), ['$1', '$3']}.
 Function -> Parameters '=>' Block : {'=>', metadata_of('$2'), ['$1', '$3']}.
 
@@ -77,6 +79,7 @@ MapElement -> Expression ':' Expression : {'$1', '$3'}.
 MapElements -> MapElement : ['$1'].
 MapElements -> MapElement ',' MapElements : ['$1' | '$3'].
 Map -> '{' MapElements '}' : {'{}', metadata_of('$1'), '$2'}.
+Map -> '{' '}' : {'{}', metadata_of('$1'), []}.
 
 Dispatch -> Expression '->' FunctionCall : {'->', metadata_of('$2'), ['$1', '$3']}.
 
@@ -90,9 +93,9 @@ If -> 'if' '(' Expression ')' Expression 'else' Expression : {'if', metadata_of(
 If -> 'if' '(' Expression ')' Block 'else' Expression : {'if', metadata_of('$1'), ['$3', '$5', '$7']}. 
 If -> 'if' '(' Expression ')' Expression 'else' Block : {'if', metadata_of('$1'), ['$3', '$5', '$7']}. 
 
-Cond -> 'cond' '{' CondExpressions '}' : {'cond', metadata_of('$1'), '$3'}.
-CondExpression -> '(' Expression ')' Block : {cond_expr, metadata_of('$1'), ['$2', '$4']}.
-CondExpression -> '(' Expression ')' Expression : {cond_expr, metadata_of('$1'), ['$2', '$4']}.
+Cond -> 'cond' '{' CondExpressions '}' : {'cond_block', metadata_of('$1'), '$3'}.
+CondExpression -> '(' Expression ')' Block : {'cond', metadata_of('$1'), ['$2', '$4']}.
+CondExpression -> '(' Expression ')' Expression : {'cond', metadata_of('$1'), ['$2', '$4']}.
 CondExpressions -> CondExpression : ['$1'].
 CondExpressions -> CondExpression CondExpressions : ['$1' | '$2'].
 
