@@ -7,7 +7,7 @@ defmodule Lexer do
     "false" => false,
     "if" => :if,
     "else" => :else,
-    "null" => :null,
+    "nil" => nil,
     "or" => :or,
     "and" => :and,
     "not" => :not,
