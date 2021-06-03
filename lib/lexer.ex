@@ -42,9 +42,9 @@ defmodule Lexer do
 
   defp finalize_token({:number, value, metadata}) do
     if String.contains?(value, ".") do
-      [{String.to_float(value), metadata}]
+      [{:number, metadata, String.to_float(value)}]
     else
-      [{String.to_integer(value), metadata}]
+      [{:int, metadata, String.to_integer(value)}]
     end
   end
 
@@ -52,7 +52,7 @@ defmodule Lexer do
 
   defp finalize_token({:id, value, metadata}) do
     case Map.get(@reserved, value) do
-      nil -> [{{:id, value}, metadata}]
+      nil -> [{:id, metadata, value}]
       reserved -> [{reserved, metadata}]
     end
   end
@@ -62,12 +62,12 @@ defmodule Lexer do
   # Comments
   defp lexer([{"/", metadata}, {"/", _} | rest], token, tokens) do
     {rest, comment} = comment_lexer(rest, "")
-    lexer(rest, nil, tokens ++ finalize_token(token) ++ [{{:comment, comment}, metadata}])
+    lexer(rest, nil, tokens ++ finalize_token(token) ++ [{:comment, metadata, comment}])
   end
 
   defp lexer([{"/", metadata}, {"*", _} | rest], token, tokens) do
     {rest, comment} = block_comment_lexer(rest, "")
-    lexer(rest, nil, tokens ++ finalize_token(token) ++ [{{:block_comment, comment}, metadata}])
+    lexer(rest, nil, tokens ++ finalize_token(token) ++ [{:block_comment, metadata, comment}])
   end
 
   # Operators
@@ -83,7 +83,6 @@ defmodule Lexer do
   lex(":", :":")
   lex("(", :"(")
   lex(")", :")")
-  lex(".", :.)
   lex("++", :++)
   lex("+", :+)
   lex("-", :-)
@@ -100,10 +99,20 @@ defmodule Lexer do
   lex("\r\n", :newline)
   lex("\n", :newline)
 
+  defp lexer([{char, cmetadata} | rest], {:number, number, metadata}, tokens) do
+    if Enum.member?(String.graphemes("0123456789."), char) do
+      lexer(rest, {:number, number <> char, metadata}, tokens)
+    else
+      raise "Expected a number, got: #{char} at #{inspect(cmetadata)}"
+    end
+  end
+
+  lex(".", :.)
+
   # Strings
   defp lexer([{"\"", metadata} | rest], token, tokens) do
     {rest, string} = string_lexer(rest, "")
-    tokens = tokens ++ finalize_token(token) ++ [{string, metadata}]
+    tokens = tokens ++ finalize_token(token) ++ [{:string, metadata, string}]
     lexer(rest, nil, tokens)
   end
 
@@ -113,14 +122,6 @@ defmodule Lexer do
       lexer(rest, {:number, char, metadata}, tokens)
     else
       lexer(rest, {:id, char, metadata}, tokens)
-    end
-  end
-
-  defp lexer([{char, cmetadata} | rest], {:number, number, metadata}, tokens) do
-    if Enum.member?(String.graphemes("0123456789."), char) do
-      lexer(rest, {:number, number <> char, metadata}, tokens)
-    else
-      raise "Expected a number, got: #{char} at #{inspect(cmetadata)}"
     end
   end
 
@@ -154,30 +155,13 @@ defmodule Lexer do
   defp block_comment_lexer([{"*", _}, {"/", _} | rest], comment), do: {rest, comment}
   defp block_comment_lexer([{c, _} | rest], comment), do: block_comment_lexer(rest, comment <> c)
 
-  defp strip_token({{token, _}, _}, type), do: token != type
+  defp strip_token({token, _, _}, type), do: token != type
   defp strip_token({token, _}, type), do: token != type
 
   def strip(tokens, type) do
     tokens
     |> Enum.filter(&strip_token(&1, type))
   end
-
-  defp convert_to_yecc([{{token, value}, metadata} | tokens]),
-    do: [{token, metadata, value}] ++ convert_to_yecc(tokens)
-
-  defp convert_to_yecc([{token, metadata} | tokens]) when is_integer(token),
-    do: [{:int, metadata, token}] ++ convert_to_yecc(tokens)
-
-  defp convert_to_yecc([{token, metadata} | tokens]) when is_float(token),
-    do: [{:number, metadata, token}] ++ convert_to_yecc(tokens)
-
-  defp convert_to_yecc([{token, metadata} | tokens]) when is_binary(token),
-    do: [{:string, metadata, token}] ++ convert_to_yecc(tokens)
-
-  defp convert_to_yecc([{token, metadata} | tokens]) when is_atom(token),
-    do: [{token, metadata}] ++ convert_to_yecc(tokens)
-
-  defp convert_to_yecc([]), do: []
 
   def to_yecc(tokens) do
     last_line =
@@ -191,7 +175,6 @@ defmodule Lexer do
     |> strip(:comment)
     |> strip(:block_comment)
     |> strip(:newline)
-    |> convert_to_yecc()
     |> Kernel.++([{:"$end", last_line}])
   end
 
