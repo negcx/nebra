@@ -81,6 +81,7 @@ defmodule Lexer do
   lex(">", :>)
   lex("<", :<)
   lex(":", :":")
+  lex("(\\", :"(\\")
   lex("(", :"(")
   lex(")", :")")
   lex("++", :++)
