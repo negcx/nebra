@@ -1,5 +1,5 @@
-Nonterminals E P_list F S S_list B E_list Call.
-Terminals '+' '*' '-' '/' '(' ')' '{' '}' ',' '=>' '=' ';' int number id.
+Nonterminals E P_list F S S_list B E_list Call List Element Elements.
+Terminals '+' '*' '-' '/' '(' ')' '{' '}' ',' '=>' '=' ';' int number id '[' ']'.
 Rootsymbol S_list.
 Endsymbol '$end'.
 
@@ -25,21 +25,29 @@ E -> '(' E ')' : '$2'.
 E -> int : value_of('$1').
 E -> number : value_of('$1').
 E -> id : '$1'.
-E -> F : '$1'.
+% E -> F : '$1'.
 E -> Call : '$1'.
+E -> List : '$1'.
 E_list -> E : ['$1'].
 E_list -> E ',' E_list : ['$1' | '$3'].
 
-P_list -> id : ['$1'].
-P_list -> id ',' P_list : ['$1' | '$3'].
+% P_list -> id : ['$1'].
+% P_list -> id ',' P_list : ['$1' | '$3'].
 
-F -> id '=>' B : {'=>', metadata_of('$1'), ['$1', '$3']}.
-F -> id '=>' E : {'=>', metadata_of('$1'), ['$1', '$3']}.
+% F -> id '=>' B : {'=>', metadata_of('$1'), ['$1', '$3']}.
+% F -> id '=>' E : {'=>', metadata_of('$1'), ['$1', '$3']}.
 
-F -> P_list '=>' B : {'=>', metadata_of('$2'), ['$1', '$3']}.
-F -> P_list '=>' E : {'=>', metadata_of('$2'), ['$1', '$3']}.
+% F -> P_list '=>' B : {'=>', metadata_of('$2'), ['$1', '$3']}.
+% F -> P_list '=>' E : {'=>', metadata_of('$2'), ['$1', '$3']}.
 
 Call -> id '(' E_list ')' : {'()', metadata_of('$1'), ['$1', '$3']}.
+
+
+List -> '[' ']' : [].
+List -> '[' E_list ']' : '$2'.
+% Elements -> Element : '$1'.
+% Elements -> Element ',' Elements : ['$1' | '$3'].
+% Element -> E : '$1'.
 
 Erlang code.
 value_of({_Token, _Metadata, Value}) -> Value.
