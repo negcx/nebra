@@ -1,5 +1,5 @@
-Nonterminals Statement Statements Expression Block Function FunctionCall List Literal Elements Parameters MapElement MapElements Map Dispatch Access Uminus.
-Terminals '+' '*' '-' '/' '(' ')' '{' '}' ':' ',' '=>' '=' ';' int number string id '[' ']' '->' '.' 'if' else 'or' 'and' 'not' '==' '!=' '>=' '>' '<=' '<' true false null.
+Nonterminals Statement Statements Expression Block Function FunctionCall List Literal Elements Parameters MapElement MapElements Map Dispatch Access Uminus If Cond CondExpression CondExpressions.
+Terminals '+' '*' '-' '/' '(' ')' '{' '}' ':' ',' '=>' '=' ';' int number string id '[' ']' '->' '.' 'if' else 'or' 'and' 'not' '==' '!=' '>=' '>' '<=' '<' true false null 'cond'.
 Rootsymbol Statements.
 Endsymbol '$end'.
 
@@ -43,6 +43,8 @@ Expression -> Dispatch : '$1'.
 Expression -> Access : '$1'.
 Expression -> 'not' Expression : {'not', metadata_of('$1'), ['$2']}.
 Expression -> Uminus : '$1'.
+Expression -> If : '$1'.
+Expression -> Cond : '$1'.
 
 Uminus -> '-' Expression : {uminus, metadata_of('$1'), ['$2']}.
 
@@ -80,6 +82,19 @@ Dispatch -> Expression '->' FunctionCall : {'->', metadata_of('$2'), ['$1', '$3'
 
 Access -> Expression '.' id : {'.', metadata_of('$2'), ['$1', '$3']}.
 Access -> Expression '[' Expression ']' : {'.', metadata_of('$2'), ['$1', '$3']}.
+
+If -> 'if' '(' Expression ')' Block : {'if', metadata_of('$1'), ['$3', '$5']}.
+If -> 'if' '(' Expression ')' Block 'else' Block : {'if', metadata_of('$1'), ['$3', '$5', '$7']}. 
+If -> 'if' '(' Expression ')' Expression : {'if', metadata_of('$1'), ['$3', '$5']}.
+If -> 'if' '(' Expression ')' Expression 'else' Expression : {'if', metadata_of('$1'), ['$3', '$5', '$7']}. 
+If -> 'if' '(' Expression ')' Block 'else' Expression : {'if', metadata_of('$1'), ['$3', '$5', '$7']}. 
+If -> 'if' '(' Expression ')' Expression 'else' Block : {'if', metadata_of('$1'), ['$3', '$5', '$7']}. 
+
+Cond -> 'cond' '{' CondExpressions '}' : {'cond', metadata_of('$1'), '$3'}.
+CondExpression -> '(' Expression ')' Block : {cond_expr, metadata_of('$1'), ['$2', '$4']}.
+CondExpression -> '(' Expression ')' Expression : {cond_expr, metadata_of('$1'), ['$2', '$4']}.
+CondExpressions -> CondExpression : ['$1'].
+CondExpressions -> CondExpression CondExpressions : ['$1' | '$2'].
 
 Erlang code.
 value_of({_Token, _Metadata, Value}) -> Value.

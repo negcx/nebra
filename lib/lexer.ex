@@ -8,10 +8,10 @@ defmodule Lexer do
     "if" => :if,
     "else" => :else,
     "null" => :null,
-    "undefined" => :undefined,
     "or" => :or,
     "and" => :and,
-    "not" => :not
+    "not" => :not,
+    "cond" => :cond
   }
 
   defp code_with_metadata(code, metadata),
