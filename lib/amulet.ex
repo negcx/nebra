@@ -1,6 +1,6 @@
-defmodule Amulet do
+defmodule Nebra do
   @moduledoc """
-  Documentation for `Amulet`.
+  Documentation for `Nebra`.
   """
 
   @doc """
@@ -8,7 +8,7 @@ defmodule Amulet do
 
   ## Examples
 
-      iex> Amulet.hello()
+      iex> Nebra.hello()
       :world
 
   """

@@ -1,6 +1,6 @@
-defmodule AmuletTest do
+defmodule NebraTest do
   use ExUnit.Case
-  doctest Amulet
+  doctest Nebra
 
   test "Let's do it" do
     code = """
