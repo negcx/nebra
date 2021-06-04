@@ -18,7 +18,7 @@ defmodule Lexer do
     do:
       code_with_metadata(
         String.graphemes(code),
-        Keyword.merge([line: 1, column: 1], metadata),
+        Map.merge(%{line: 1, column: 1}, metadata),
         []
       )
 
@@ -27,7 +27,7 @@ defmodule Lexer do
   defp code_with_metadata(["\n" | rest], metadata, stack) do
     code_with_metadata(
       rest,
-      Keyword.update!(metadata, :column, fn _ -> 1 end) |> Keyword.update!(:line, &(&1 + 1)),
+      Map.put(metadata, :column, 1) |> Map.update!(:column, &(&1 + 1)),
       stack ++ [{"\n", metadata}]
     )
   end
@@ -35,7 +35,7 @@ defmodule Lexer do
   defp code_with_metadata([head | rest], metadata, stack) do
     code_with_metadata(
       rest,
-      Keyword.update!(metadata, :column, &(&1 + 1)),
+      Map.update!(metadata, :column, &(&1 + 1)),
       stack ++ [{head, metadata}]
     )
   end
@@ -133,7 +133,7 @@ defmodule Lexer do
   defp lexer([], token, tokens),
     do: tokens ++ finalize_token(token)
 
-  def lexer(code, metadata \\ []) do
+  def lexer(code, metadata \\ %{}) do
     code = code_with_metadata(code, metadata)
 
     lexer(code, nil, [])
