@@ -94,9 +94,12 @@ defmodule Compiler do
     path =
       compile(apply_metadata(left, assign: true))
       |> List.flatten()
-      |> Enum.join(", ")
 
-    "#{@symbol_t} = put_in(#{@symbol_t}, [#{path}], #{compile(right)})"
+    first_item = hd(path)
+
+    path = Enum.join(path, ", ")
+
+    "(#{@symbol_t} = Nebra.Kernel.put_in(#{@symbol_t}, [#{path}], #{compile(right)}))[#{first_item}]"
   end
 
   defp quotes(s), do: "\"#{s}\""
