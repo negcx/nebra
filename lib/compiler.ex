@@ -22,7 +22,7 @@ defmodule Compiler do
   def compile([child | ast]), do: compile(child) <> compile(ast)
   def compile([]), do: ""
 
-  def compile({:id, %{assign: true}, id}), do: "#{quotes(id)}"
+  def compile({:id, %{assign: true}, id}), do: ["#{quotes(id)}"]
 
   def compile({:id, _metadata, id}), do: "#{@symbol_t}[#{quotes(id)}]"
 
