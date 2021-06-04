@@ -16,7 +16,7 @@ Left 400 '/'.
 Unary 500 Uminus.
 Unary 500 'not'.
 Right 600 '.'.
-Right 800 '['.
+Right 600 '['.
 
 Start -> '$start' Statements : {start, metadata('$1'), '$2'}.
 
@@ -82,7 +82,6 @@ Function -> Parameters '=>' Block : {'=>', metadata('$2'), ['$1', '$3']}.
 Function -> '(\\' Parameters ')' '=>' Expression : {'=>', metadata('$4'), ['$2', '$5']}.
 Function -> '(\\' Parameters ')' '=>' Block : {'=>', metadata('$4'), ['$2', '$5']}.
 
-
 FunctionCall -> id '(' ')' : {'()', metadata('$1'), ['$1', []]}.
 FunctionCall -> id '(' Elements ')' : {'()', metadata('$1'), ['$1', '$3']}.
 
@@ -95,7 +94,7 @@ Map -> '{' '}' : {'{}', metadata('$1'), []}.
 Dispatch -> Expression '->' FunctionCall : {'->', metadata('$2'), ['$1', '$3']}.
 
 Access -> Expression '.' id : {'.', metadata('$2'), ['$1', '$3']}.
-Access -> Expression '[' Expression ']' : {'.', metadata('$2'), ['$1', '$3']}.
+Access -> Expression '[' Expression ']' : {access, metadata('$2'), ['$1', '$3']}.
 
 If -> 'if' '(' Expression ')' Block : {'if', metadata('$1'), ['$3', '$5']}.
 If -> 'if' '(' Expression ')' Block 'else' Block : {'if', metadata('$1'), ['$3', '$5', '$7']}. 
