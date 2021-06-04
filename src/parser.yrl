@@ -1,6 +1,6 @@
-Nonterminals Statement Statements Expression Block Function FunctionCall List Literal Elements Parameters MapElement MapElements Map Dispatch Access Uminus If Cond CondExpression CondExpressions.
-Terminals '+' '*' '-' '/' '(' ')' '{' '}' ':' ',' '=>' '=' ';' int number string id '[' ']' '->' '.' 'if' else 'or' 'and' 'not' '==' '!=' '>=' '>' '<=' '<' true false 'nil' 'cond' '(\\' '++'.
-Rootsymbol Statements.
+Nonterminals Statement Statements Expression Block Function FunctionCall List Literal Elements Parameters MapElement MapElements Map Dispatch Access Uminus If Cond CondExpression CondExpressions Start.
+Terminals '+' '*' '-' '/' '(' ')' '{' '}' ':' ',' '=>' '=' ';' int number string id '[' ']' '->' '.' 'if' else 'or' 'and' 'not' '==' '!=' '>=' '>' '<=' '<' true false 'nil' 'cond' '(\\' '++' '$start'.
+Rootsymbol Start.
 Endsymbol '$end'.
 
 Right 100 '='.
@@ -15,6 +15,10 @@ Left 400 '*'.
 Left 400 '/'.
 Unary 500 Uminus.
 Unary 500 'not'.
+Right 600 '.'.
+Right 800 '['.
+
+Start -> '$start' Statements : {start, metadata('$1'), '$2'}.
 
 Block -> '{' Statements '}' : {block, metadata('$1'), '$2'}.
 Statement -> Statement ';' : '$1'.
