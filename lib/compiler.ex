@@ -27,7 +27,7 @@ defmodule Compiler do
     output = stack |> compile_assign_stack(compile(right))
     root_item = Enum.reverse(stack) |> hd()
 
-    "Map.get(#{@symbol_t} = #{output}, #{root_item})"
+    "Map.get(#{@symbol_t} = (#{output}), #{root_item})"
   end
 
   def compile({:., _, _} = node) do
@@ -129,5 +129,9 @@ defmodule Compiler do
       end)
 
     compile_assign_stack(tail, "s #{path} |> Map.put(#{head}, #{right})")
+  end
+
+  def compile_access({:access, _, [{:id, _, id}, right]}) do
+    "Map.get(\"#{id}\") |> Map.get(#{compile_access(right)})"
   end
 end

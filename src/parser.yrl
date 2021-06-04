@@ -15,8 +15,8 @@ Left 400 '*'.
 Left 400 '/'.
 Unary 500 Uminus.
 Unary 500 'not'.
-Right 600 '.'.
-Right 600 '['.
+Left 600 '.'.
+Left 600 '['.
 
 Start -> '$start' Statements : {start, metadata('$1'), '$2'}.
 

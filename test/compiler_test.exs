@@ -8,5 +8,13 @@ defmodule CompilerTest do
              y.greeting = "Hello, it works.";
              y[x.hello]
              """)
+
+    assert {"A demon wrote this code", _} =
+             Nebra.go("""
+             (x)["hello"] = "greeting";
+             (y).greeting = "Hello, it works.";
+             (((y)[(x).hello]).x)[(y.greeting)] = "A demon wrote this code";
+             (((y)["greeting"])["x"])["Hello, it works."]
+             """)
   end
 end
