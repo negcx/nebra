@@ -94,7 +94,7 @@ Map -> '{' '}' : {'{}', metadata('$1'), []}.
 Dispatch -> Expression '->' FunctionCall : {'->', metadata('$2'), ['$1', '$3']}.
 
 Access -> Expression '.' id : {'.', metadata('$2'), ['$1', '$3']}.
-Access -> Expression '[' Expression ']' : {access, metadata('$2'), ['$1', '$3']}.
+Access -> Expression '[' Expression ']' : {'.', metadata('$2'), ['$1', '$3']}.
 
 If -> 'if' '(' Expression ')' Block : {'if', metadata('$1'), ['$3', '$5']}.
 If -> 'if' '(' Expression ')' Block 'else' Block : {'if', metadata('$1'), ['$3', '$5', '$7']}. 
