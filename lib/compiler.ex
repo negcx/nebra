@@ -137,6 +137,12 @@ defmodule Compiler do
   def compile({:"{}_child", _, [key, value]}),
     do: "#{compile(apply_metadata(key, map: true))} => #{compile(value)}"
 
+  def compile({:if, _, [condition, expr]}),
+    do: "if #{compile(condition)} do\n#{compile(expr)}\nend"
+
+  def compile({:if, _, [condition, expr, else_expr]}),
+    do: "if #{compile(condition)} do\n#{compile(expr)}\nelse\n#{compile(else_expr)}\nend"
+
   defp quotes(s), do: "\"" <> s <> "\""
 
   defp apply_metadata({token, old_metadata, children}, new_metadata) do
