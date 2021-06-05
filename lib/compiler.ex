@@ -13,7 +13,8 @@ defmodule Compiler do
   def compile({:start, _, children}) do
     initial_code() <>
       (children
-       |> Enum.map(&compile/1)
+       |> Enum.map(&Task.async(fn -> compile(&1) end))
+       |> Enum.map(&Task.await/1)
        |> Enum.join("\n"))
   end
 
