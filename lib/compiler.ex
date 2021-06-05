@@ -1,5 +1,9 @@
 defmodule Compiler do
   @symbol_t "s"
+
+  require Compiler.Macros
+  import Compiler.Macros
+
   defp initial_code do
     """
     #{@symbol_t} = %{}
@@ -27,8 +31,21 @@ defmodule Compiler do
 
   def compile({:id, _metadata, id}), do: "#{@symbol_t}[#{quotes(id)}]"
 
-  def compile({:+, _, [left, right]}),
-    do: compile(left) <> " + " <> compile(right)
+  binary_op(:+)
+  binary_op(:-)
+  binary_op(:/)
+  binary_op(:*)
+  binary_op(:and)
+  binary_op(:or)
+  binary_op(:==)
+  binary_op(:!=)
+  binary_op(:>)
+  binary_op(:<)
+  binary_op(:>=)
+  binary_op(:<=)
+  binary_op(:++)
+  unary_op(:-)
+  unary_op(:not)
 
   def compile({:"()", _, [f, params]}) do
     call_params =
@@ -42,6 +59,8 @@ defmodule Compiler do
   def compile(i) when is_integer(i), do: Integer.to_string(i)
   def compile(n) when is_float(n), do: Float.to_string(n)
   def compile(s) when is_binary(s), do: quotes(s)
+  def compile({true, _}), do: "true"
+  def compile({false, _}), do: "false"
 
   def compile({:"=>", metadata, [params, body]}) do
     {bindings, _} =

@@ -85,7 +85,7 @@ Function -> '(\\' Parameters ')' '=>' Block : {'=>', metadata('$4'), ['$2', '$5'
 FunctionCall -> id '(' ')' : {'()', metadata('$1'), ['$1', []]}.
 FunctionCall -> id '(' Elements ')' : {'()', metadata('$1'), ['$1', '$3']}.
 
-MapElement -> Expression ':' Expression : {'{}_child', metadata('$2') ,['$1', '$3']}.
+MapElement -> Expression ':' Expression : {'{}_child', metadata('$2'), ['$1', '$3']}.
 MapElements -> MapElement : ['$1'].
 MapElements -> MapElement ',' MapElements : ['$1' | '$3'].
 Map -> '{' MapElements '}' : {'{}', metadata('$1'), '$2'}.
