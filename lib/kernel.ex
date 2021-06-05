@@ -7,8 +7,8 @@ defmodule Nebra.Kernel do
   defp put_in(data, [head | tail], value, path = path) do
     {_, data} =
       get_and_update_in(data, path ++ [head], fn
-        nil -> {nil, %{}}
-        value -> {value, value}
+        value when is_map(value) -> {value, value}
+        value -> {value, %{}}
       end)
 
     put_in(data, tail, value, path ++ [head])

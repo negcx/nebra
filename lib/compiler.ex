@@ -92,7 +92,7 @@ defmodule Compiler do
   end
 
   def compile({:., %{assign: true}, [{:id, _, left_id}, {:id, _, right_id}]}),
-    do: [left_id, right_id]
+    do: [quotes(left_id), quotes(right_id)]
 
   def compile({:., _, [{:id, _, _} = left, {:id, _, right_id}]}),
     do: "#{compile(left)}[#{quotes(right_id)}]"
