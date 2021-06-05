@@ -23,6 +23,7 @@ defmodule Compiler do
   def compile([]), do: ""
 
   def compile({:id, %{assign: true}, id}), do: ["#{quotes(id)}"]
+  def compile({:id, %{map: true}, id}), do: quotes(id)
 
   def compile({:id, _metadata, id}), do: "#{@symbol_t}[#{quotes(id)}]"
 
@@ -102,7 +103,21 @@ defmodule Compiler do
     "(#{@symbol_t} = Nebra.Kernel.put_in(#{@symbol_t}, [#{path}], #{compile(right)}))[#{first_item}]"
   end
 
-  defp quotes(s), do: "\"#{s}\""
+  def compile({:{}, _, []}), do: "%{}"
+
+  def compile({:{}, _, children}) do
+    inner =
+      children
+      |> Enum.map(&compile/1)
+      |> Enum.join(", ")
+
+    "%{ #{inner} }"
+  end
+
+  def compile({:"{}_child", _, [key, value]}),
+    do: "#{compile(apply_metadata(key, map: true))} => #{compile(value)}"
+
+  defp quotes(s), do: "\"" <> s <> "\""
 
   defp apply_metadata({token, old_metadata, children}, new_metadata) do
     {token, Map.merge(old_metadata, Enum.into(new_metadata, %{})), children}
