@@ -1,5 +1,5 @@
 Nonterminals Statement Statements Expression Block Function FunctionCall List Literal Elements Parameters MapElement MapElements Map Dispatch Access Uminus If Cond CondExpression CondExpressions Start.
-Terminals '+' '*' '-' '/' '(' ')' '{' '}' ':' ',' '=>' '=' ';' int number string id '[' ']' '->' '.' 'if' else 'or' 'and' 'not' '==' '!=' '>=' '>' '<=' '<' true false 'nil' 'cond' '(\\' '++' '$start'.
+Terminals '+' '*' '-' '/' '(' ')' '{' '}' ':' ',' '=>' '=' ';' int number string id '[' ']' '->' '.' 'if' else 'or' 'and' 'not' '==' '!=' '>=' '>' '<=' '<' true false 'null' 'cond' '(\\' '++' '$start'.
 Rootsymbol Start.
 Endsymbol '$end'.
 
@@ -61,7 +61,7 @@ Literal -> List : '$1'.
 Literal -> Map : '$1'.
 Literal -> true : '$1'.
 Literal -> false : '$1'.
-Literal -> 'nil' : '$1'.
+Literal -> 'null' : '$1'.
 
 List -> '[' ']' : [].
 List -> '[' Elements ']' : '$2'.

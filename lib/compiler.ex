@@ -61,6 +61,7 @@ defmodule Compiler do
   def compile(s) when is_binary(s), do: quotes(s)
   def compile({true, _}), do: "true"
   def compile({false, _}), do: "false"
+  def compile({:null, _}), do: "nil"
 
   def compile({:"=>", metadata, [params, body]}) do
     {bindings, _} =
