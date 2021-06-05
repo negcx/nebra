@@ -143,6 +143,14 @@ defmodule Compiler do
   def compile({:if, _, [condition, expr, else_expr]}),
     do: "if #{compile(condition)} do\n#{compile(expr)}\nelse\n#{compile(else_expr)}\nend"
 
+  def compile({:cond_block, _, children}) do
+    expressions = children |> Enum.map(&compile/1) |> Enum.join("\n")
+    "cond do\n#{expressions}\nend"
+  end
+
+  def compile({:cond, _, [condition, expr]}),
+    do: "#{compile(condition)} ->\n#{compile(expr)}"
+
   defp quotes(s), do: "\"" <> s <> "\""
 
   defp apply_metadata({token, old_metadata, children}, new_metadata) do
