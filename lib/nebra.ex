@@ -2,7 +2,11 @@ defmodule Nebra do
   def compile(code) do
     {:ok, code} = Lexer.lex_and_parse(code)
     compiled = Compiler.compile(code)
-    IO.puts(compiled)
+
+    if IEx.started?() do
+      IO.puts(compiled)
+    end
+
     compiled
   end
 
