@@ -4,18 +4,11 @@ defmodule Compiler do
   require Compiler.Macros
   import Compiler.Macros
 
-  defp initial_code do
-    """
-    #{@symbol_t} = %{}
-    """
-  end
-
   def compile({:start, _, children}) do
-    initial_code() <>
-      (children
-       |> Enum.map(&Task.async(fn -> compile(&1) end))
-       |> Enum.map(&Task.await/1)
-       |> Enum.join("\n"))
+    children
+    |> Enum.map(&Task.async(fn -> compile(&1) end))
+    |> Enum.map(&Task.await/1)
+    |> Enum.join("\n")
   end
 
   def compile({:block, _, children}) do

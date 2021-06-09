@@ -10,7 +10,6 @@ defmodule Nebra do
     compiled
   end
 
-  def go(code) do
-    compile(code) |> Code.eval_string()
-  end
+  def go(code, bindings \\ %{}),
+    do: compile(code) |> Code.eval_string(s: bindings)
 end

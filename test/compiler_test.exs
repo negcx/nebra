@@ -4,14 +4,12 @@ defmodule CompilerTest do
   test "Basic . pattern" do
     assert Nebra.compile("x1.x2.x3.x4") ==
              """
-             s = %{}
              s["x1"]["x2"]["x3"]["x4"]
              """
              |> String.trim_trailing("\n")
 
     assert Nebra.compile("blah().x1.x2") ==
              """
-             s = %{}
              s["blah"].()["x1"]["x2"]
              """
              |> String.trim_trailing("\n")
