@@ -16,4 +16,20 @@ defmodule Nebra.Kernel do
 
   def dispatch(self, method, args),
     do: apply(self[method], [self | args])
+
+  def add(left, right) when is_binary(left) and is_binary(right),
+    do: left <> right
+
+  def add(left, right)
+      when (is_integer(left) or is_float(left)) and (is_integer(right) or is_float(right)),
+      do: left + right
+
+  def add(left, right) when is_list(left) and not is_list(right),
+    do: left ++ [right]
+
+  def add(left, right) when is_list(left) and is_list(right),
+    do: left ++ right
+
+  def add(left, right) when not is_list(left) and is_list(right),
+    do: [left | right]
 end

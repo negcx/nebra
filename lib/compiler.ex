@@ -33,7 +33,9 @@ defmodule Compiler do
 
   def compile({:id, _metadata, id}), do: "#{@symbol_t}[#{quotes(id)}]"
 
-  binary_op(:+)
+  def compile({:+, _, [left, right]}),
+    do: "(Nebra.Kernel.add(#{compile(left)}, #{compile(right)}))"
+
   binary_op(:-)
   binary_op(:/)
   binary_op(:*)
@@ -77,6 +79,15 @@ defmodule Compiler do
   def compile({true, _}), do: "true"
   def compile({false, _}), do: "false"
   def compile({:null, _}), do: "nil"
+
+  def compile({:"[]", _, elements}) do
+    inside =
+      elements
+      |> Enum.map(&compile/1)
+      |> Enum.join(", ")
+
+    "[ #{inside} ]"
+  end
 
   def compile({:"=>", metadata, [params, body]}) do
     {bindings, _} =

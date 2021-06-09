@@ -1,5 +1,5 @@
 Nonterminals Statement Statements Expression Block Function FunctionCall List Literal Elements Parameters MapElement MapElements Map Dispatch Access Uminus If Cond CondExpression CondExpressions Start.
-Terminals '+' '*' '-' '/' '(' ')' '{' '}' ':' ',' '=>' '=' ';' int number string id '[' ']' '->' '.' 'if' else 'or' 'and' 'not' '==' '!=' '>=' '>' '<=' '<' true false 'null' 'cond' '(\\' '++' '$start'.
+Terminals '+' '*' '-' '/' '(' ')' '{' '}' ':' ',' '=>' '=' ';' int number string id '[' ']' '->' '.' 'if' else 'or' 'and' 'not' '==' '!=' '>=' '>' '<=' '<' true false 'null' 'cond' '(\\' '$start'.
 Rootsymbol Start.
 Endsymbol '$end'.
 
@@ -8,7 +8,6 @@ Left 120 'and'.
 Left 140 'or'.
 Left 200 '==' '!='.
 Left 250 '>' '>=' '<' '<='.
-Left 275 '++'.
 Left 300 '+'.
 Left 300 '-'.
 Left 400 '*'.
@@ -37,7 +36,6 @@ Expression -> Expression '!=' Expression : {token('$2'), metadata('$2'), ['$1', 
 Expression -> Expression '>' Expression : {token('$2'), metadata('$2'), ['$1', '$3']}.
 Expression -> Expression '<' Expression : {token('$2'), metadata('$2'), ['$1', '$3']}.
 Expression -> Expression '>=' Expression : {token('$2'), metadata('$2'), ['$1', '$3']}.
-Expression -> Expression '++' Expression : {token('$2'), metadata('$2'), ['$1', '$3']}.
 Expression -> Expression '<=' Expression : {token('$2'), metadata('$2'), ['$1', '$3']}.
 Expression -> Expression 'and' Expression : {token('$2'), metadata('$2'), ['$1', '$3']}.
 Expression -> Expression 'or' Expression : {token('$2'), metadata('$2'), ['$1', '$3']}.
@@ -65,7 +63,7 @@ Literal -> false : '$1'.
 Literal -> 'null' : '$1'.
 
 List -> '[' ']' : [].
-List -> '[' Elements ']' : '$2'.
+List -> '[' Elements ']' : {'[]', metadata('$1'), '$2'}.
 Elements -> Expression : ['$1'].
 Elements -> Expression ',' Elements : ['$1' | '$3'].
 
