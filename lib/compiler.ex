@@ -29,6 +29,7 @@ defmodule Compiler do
 
   def compile({:id, %{assign: true}, id}), do: ["#{quotes(id)}"]
   def compile({:id, %{map: true}, id}), do: quotes(id)
+  def compile({:id, %{dispatch: true}, id}), do: quotes(id)
 
   def compile({:id, _metadata, id}), do: "#{@symbol_t}[#{quotes(id)}]"
 
@@ -55,6 +56,19 @@ defmodule Compiler do
       |> Enum.join(", ")
 
     compile(f) <> ".(" <> call_params <> ")"
+  end
+
+  def compile({:->, _, [self, method, params]}) do
+    call_params =
+      params
+      |> Enum.map(&compile/1)
+      |> Enum.join(", ")
+
+    compiled_self = compile(self)
+
+    compiled_method = compile(apply_metadata(method, dispatch: true))
+
+    "Nebra.Kernel.dispatch((#{compiled_self}), #{compiled_method}, [#{call_params}])"
   end
 
   def compile(i) when is_integer(i), do: Integer.to_string(i)

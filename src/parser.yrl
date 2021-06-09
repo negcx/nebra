@@ -92,7 +92,8 @@ MapElements -> MapElement ',' MapElements : ['$1' | '$3'].
 Map -> '{' MapElements '}' : {'{}', metadata('$1'), '$2'}.
 Map -> '{' '}' : {'{}', metadata('$1'), []}.
 
-Dispatch -> Expression '->' FunctionCall : {'->', metadata('$2'), ['$1', '$3']}.
+Dispatch -> Expression '->' Expression '(' ')' : {'->', metadata('$2'), ['$1', '$3', []]}.
+Dispatch -> Expression '->' Expression '(' Elements ')' : {'->', metadata('$2'), ['$1', '$3', '$5']}.
 
 Access -> Expression '.' id : {'.', metadata('$2'), ['$1', '$3']}.
 Access -> Expression '[' Expression ']' : {'.', metadata('$2'), ['$1', '$3']}.

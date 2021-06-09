@@ -13,4 +13,7 @@ defmodule Nebra.Kernel do
 
     put_in(data, tail, value, path ++ [head])
   end
+
+  def dispatch(self, method, args),
+    do: apply(self[method], [self | args])
 end
