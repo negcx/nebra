@@ -76,10 +76,8 @@ Function -> '(\\' ')' '=>' Block : {'=>', metadata('$3'), [[], '$4']}.
 Function -> '(\\' ')' '=>' Expression : {'=>', metadata('$3'), [[], '$4']}.
 Function -> id '=>' Block : {'=>', metadata('$2'), [['$1'], '$3']}.
 Function -> id '=>' Expression : {'=>', metadata('$2'), [['$1'], '$3']}.
-Function -> Parameters '=>' Expression : {'=>', metadata('$2'), ['$1', '$3']}.
-Function -> Parameters '=>' Block : {'=>', metadata('$2'), ['$1', '$3']}.
-Function -> '(\\' Parameters ')' '=>' Expression : {'=>', metadata('$4'), ['$2', '$5']}.
-Function -> '(\\' Parameters ')' '=>' Block : {'=>', metadata('$4'), ['$2', '$5']}.
+Function -> '(\\' Elements ')' '=>' Expression : {'=>', metadata('$4'), ['$2', '$5']}.
+Function -> '(\\' Elements ')' '=>' Block : {'=>', metadata('$4'), ['$2', '$5']}.
 
 FunctionCall -> Expression '(' ')' : {'()', metadata('$1'), ['$1', []]}.
 FunctionCall -> Expression '(' Elements ')' : {'()', metadata('$1'), ['$1', '$3']}.

@@ -11,7 +11,7 @@ defmodule Std.Enum do
 
   def nebra do
     %{
-      "$Enum" => %{
+      "Enum" => %{
         "map" => &map/2,
         "reduce" => &reduce/3
       }
