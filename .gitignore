@@ -27,3 +27,4 @@ nebra-*.tar
 .elixir_ls
 .env
 src/parser.erl
+nebra_struct.neb
