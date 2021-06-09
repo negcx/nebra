@@ -16,6 +16,7 @@ Left 400 '/'.
 Unary 500 Uminus.
 Unary 500 'not'.
 Left 600 '.'.
+Left 600 '->'.
 Left 600 '['.
 
 Start -> '$start' Statements : {start, metadata('$1'), '$2'}.
@@ -82,8 +83,8 @@ Function -> Parameters '=>' Block : {'=>', metadata('$2'), ['$1', '$3']}.
 Function -> '(\\' Parameters ')' '=>' Expression : {'=>', metadata('$4'), ['$2', '$5']}.
 Function -> '(\\' Parameters ')' '=>' Block : {'=>', metadata('$4'), ['$2', '$5']}.
 
-FunctionCall -> id '(' ')' : {'()', metadata('$1'), ['$1', []]}.
-FunctionCall -> id '(' Elements ')' : {'()', metadata('$1'), ['$1', '$3']}.
+FunctionCall -> Expression '(' ')' : {'()', metadata('$1'), ['$1', []]}.
+FunctionCall -> Expression '(' Elements ')' : {'()', metadata('$1'), ['$1', '$3']}.
 
 MapElement -> Expression ':' Expression : {'{}_child', metadata('$2'), ['$1', '$3']}.
 MapElements -> MapElement : ['$1'].
