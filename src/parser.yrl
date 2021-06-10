@@ -1,4 +1,4 @@
-Nonterminals Statement Statements Expression Block Function FunctionCall List Literal Elements Parameters MapElement MapElements Map Dispatch Access Uminus If Cond CondExpression CondExpressions Start.
+Nonterminals Statement Statements Expression Block Function FunctionCall List Literal Elements MapElement MapElements Map Dispatch Access Uminus If Cond CondExpression CondExpressions Start.
 Terminals '+' '*' '-' '/' '(' ')' '{' '}' ':' ',' '=>' '=' ';' int number string id '[' ']' '->' '.' 'if' else 'or' 'and' 'not' '==' '!=' '>=' '>' '<=' '<' true false 'null' 'cond' '(\\' '$start'.
 Rootsymbol Start.
 Endsymbol '$end'.
@@ -67,9 +67,6 @@ List -> '[' Elements ']' : {'[]', metadata('$1'), '$2'}.
 Elements -> Expression : ['$1'].
 Elements -> Expression ',' Elements : ['$1' | '$3'].
 
-Parameters -> id : ['$1'].
-Parameters -> id ',' Parameters : ['$1' | '$3'].
-
 Function -> '(' ')' '=>' Block : {'=>', metadata('$3'), [[], '$4']}.
 Function -> '(' ')' '=>' Expression : {'=>', metadata('$3'), [[], '$4']}.
 Function -> '(\\' ')' '=>' Block : {'=>', metadata('$3'), [[], '$4']}.
@@ -94,12 +91,13 @@ Dispatch -> Expression '->' Expression '(' Elements ')' : {'->', metadata('$2'),
 Access -> Expression '.' id : {'.', metadata('$2'), ['$1', '$3']}.
 Access -> Expression '[' Expression ']' : {'.', metadata('$2'), ['$1', '$3']}.
 
-If -> 'if' '(' Expression ')' Block : {'if', metadata('$1'), ['$3', '$5']}.
-If -> 'if' '(' Expression ')' Block 'else' Block : {'if', metadata('$1'), ['$3', '$5', '$7']}. 
-If -> 'if' '(' Expression ')' Expression : {'if', metadata('$1'), ['$3', '$5']}.
-If -> 'if' '(' Expression ')' Expression 'else' Expression : {'if', metadata('$1'), ['$3', '$5', '$7']}. 
 If -> 'if' '(' Expression ')' Block 'else' Expression : {'if', metadata('$1'), ['$3', '$5', '$7']}. 
 If -> 'if' '(' Expression ')' Expression 'else' Block : {'if', metadata('$1'), ['$3', '$5', '$7']}. 
+If -> 'if' '(' Expression ')' Block 'else' Block : {'if', metadata('$1'), ['$3', '$5', '$7']}. 
+If -> 'if' '(' Expression ')' Block : {'if', metadata('$1'), ['$3', '$5']}.
+If -> 'if' '(' Expression ')' Expression : {'if', metadata('$1'), ['$3', '$5']}.
+If -> 'if' '(' Expression ')' Expression 'else' Expression : {'if', metadata('$1'), ['$3', '$5', '$7']}. 
+
 
 Cond -> 'cond' '{' CondExpressions '}' : {'cond_block', metadata('$1'), '$3'}.
 CondExpression -> '(' Expression ')' Block : {'cond', metadata('$1'), ['$2', '$4']}.

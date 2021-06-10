@@ -171,7 +171,7 @@ defmodule Lexer do
       |> hd()
       |> elem(1)
 
-    [{:"$start", [line: 0, column: 0]} | tokens]
+    [{:"$start", %{line: 0, column: 0}} | tokens]
     |> strip(:whitespace)
     |> strip(:comment)
     |> strip(:block_comment)
