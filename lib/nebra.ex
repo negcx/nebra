@@ -21,8 +21,14 @@ defmodule Nebra do
     bindings |> Map.merge(%{name => mod_functions})
   end
 
-  def go(code, bindings \\ %{}),
-    do: compile(code) |> Code.eval_string(s: bindings)
+  def go(code, bindings \\ %{}) do
+    compiled_code = compile(code)
+    IO.puts(compiled_code)
+
+    {result, bindings} = compiled_code |> Code.eval_string(s: bindings)
+
+    {result, bindings[:s]}
+  end
 
   def repl do
     bindings = load_module(%{}, "Map", Map)

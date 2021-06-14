@@ -1,5 +1,5 @@
 Nonterminals Statement Statements Expression Block Function FunctionCall List Literal Elements MapElement MapElements Map Dispatch Access Uminus If Cond CondExpression CondExpressions Start.
-Terminals '+' '*' '-' '/' '(' ')' '{' '}' ':' ',' '=>' '=' ';' int number string id '[' ']' '->' '.' 'if' else 'or' 'and' 'not' '==' '!=' '>=' '>' '<=' '<' true false 'null' 'cond' '(\\' '$start'.
+Terminals '+' '*' '-' '/' '(' ')' '{' '}' ':' ',' '=>' '=' ';' int number string id '[' ']' '->' '.' 'if' else 'or' 'and' 'not' '==' '!=' '>=' '>' '<=' '<' true false 'null' 'cond' '(\\' '$start' '.(' '|'.
 Rootsymbol Start.
 Endsymbol '$end'.
 
@@ -17,6 +17,7 @@ Unary 500 'not'.
 Left 600 '.'.
 Left 600 '->'.
 Left 600 '['.
+Left 800 '.('.
 
 Start -> '$start' Statements : {start, metadata('$1'), '$2'}.
 
@@ -75,9 +76,13 @@ Function -> id '=>' Block : {'=>', metadata('$2'), [['$1'], '$3']}.
 Function -> id '=>' Expression : {'=>', metadata('$2'), [['$1'], '$3']}.
 Function -> '(\\' Elements ')' '=>' Expression : {'=>', metadata('$4'), ['$2', '$5']}.
 Function -> '(\\' Elements ')' '=>' Block : {'=>', metadata('$4'), ['$2', '$5']}.
+Function -> '|' '|' '=>' Block : {'=>', metadata('$3'), [[], '$4']}.
+Function -> '|' '|' '=>' Expression : {'=>', metadata('$3'), [[], '$4']}.
+Function -> '|' Elements '|' '=>' Expression : {'=>', metadata('$4'), ['$2', '$5']}.
+Function -> '|' Elements '|' '=>' Block : {'=>', metadata('$4'), ['$2', '$5']}.
 
-FunctionCall -> Expression '(' ')' : {'()', metadata('$1'), ['$1', []]}.
-FunctionCall -> Expression '(' Elements ')' : {'()', metadata('$1'), ['$1', '$3']}.
+FunctionCall -> Expression '.(' ')' : {'()', metadata('$1'), ['$1', []]}.
+FunctionCall -> Expression '.(' Elements ')' : {'()', metadata('$1'), ['$1', '$3']}.
 
 MapElement -> Expression ':' Expression : {'{}_child', metadata('$2'), ['$1', '$3']}.
 MapElements -> MapElement : ['$1'].

@@ -71,6 +71,8 @@ defmodule Lexer do
   end
 
   # Operators
+  lex(".(", :".(")
+  lex("|", :|)
   lex("=>", :"=>")
   lex("->", :->)
   lex("==", :==)
