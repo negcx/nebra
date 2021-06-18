@@ -22,12 +22,20 @@ defmodule Nebra do
   end
 
   def go(code, bindings \\ %{}) do
-    compiled_code = compile(code)
-    IO.puts(compiled_code)
+    if String.length(String.trim(code)) > 0 do
+      compiled_code = compile(code)
+      IO.puts(compiled_code)
 
-    {result, bindings} = compiled_code |> Code.eval_string(s: bindings)
+      if String.length(compiled_code) > 0 do
+        {result, bindings} = compiled_code |> Code.eval_string(s: bindings)
 
-    {result, bindings[:s]}
+        {result, bindings[:s]}
+      else
+        {nil, bindings}
+      end
+    else
+      {nil, bindings}
+    end
   end
 
   def repl do
