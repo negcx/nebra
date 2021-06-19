@@ -1,13 +1,9 @@
 defmodule Nebra do
+  require Logger
+
   def compile(code) do
     {:ok, code} = Lexer.lex_and_parse(code)
-    compiled = Compiler.compile(code)
-
-    if IEx.started?() do
-      IO.puts(compiled)
-    end
-
-    compiled
+    Compiler.compile(code)
   end
 
   def load_module(bindings, name, module) do
@@ -24,7 +20,7 @@ defmodule Nebra do
   def go(code, bindings \\ %{}) do
     if String.length(String.trim(code)) > 0 do
       compiled_code = compile(code)
-      IO.puts(compiled_code)
+      Logger.debug(compiled_code)
 
       if String.length(compiled_code) > 0 do
         {result, bindings} = compiled_code |> Code.eval_string(s: bindings)
